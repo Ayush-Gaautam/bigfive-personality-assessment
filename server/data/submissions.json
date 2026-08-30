@@ -1,0 +1,99 @@
+[
+  {
+    "id": "SUB-1788086533688-WV47",
+    "name": "Professor Test User",
+    "email": "prof@university.edu",
+    "age": "",
+    "gender": "",
+    "occupation": "",
+    "organization": "",
+    "answers": {
+      "1": 2,
+      "2": 3,
+      "3": 4,
+      "4": 5,
+      "5": 1,
+      "6": 2,
+      "7": 3,
+      "8": 4,
+      "9": 5,
+      "10": 1,
+      "11": 2,
+      "12": 3,
+      "13": 4,
+      "14": 5,
+      "15": 1,
+      "16": 2,
+      "17": 3,
+      "18": 4,
+      "19": 5,
+      "20": 1,
+      "21": 2,
+      "22": 3,
+      "23": 4,
+      "24": 5,
+      "25": 1
+    },
+    "scores": {
+      "totalScore": 75,
+      "maxTotalScore": 125,
+      "percentage": 60,
+      "dimensionScores": {
+        "extraversion": 15,
+        "agreeableness": 15,
+        "adjustment": 15,
+        "conscientiousness": 15,
+        "openness": 15
+      },
+      "dominantTrait": "Surgency / Extraversion"
+    },
+    "submittedAt": "2026-08-30T10:42:13.688Z"
+  },
+  {
+    "id": "SUB-1788086232204-0RVG",
+    "name": "Professor Test User",
+    "email": "prof@university.edu",
+    "studentId": "PROF-001",
+    "answers": {
+      "1": 2,
+      "2": 3,
+      "3": 4,
+      "4": 5,
+      "5": 1,
+      "6": 2,
+      "7": 3,
+      "8": 4,
+      "9": 5,
+      "10": 1,
+      "11": 2,
+      "12": 3,
+      "13": 4,
+      "14": 5,
+      "15": 1,
+      "16": 2,
+      "17": 3,
+      "18": 4,
+      "19": 5,
+      "20": 1,
+      "21": 2,
+      "22": 3,
+      "23": 4,
+      "24": 5,
+      "25": 1
+    },
+    "scores": {
+      "totalScore": 75,
+      "maxTotalScore": 125,
+      "percentage": 60,
+      "dimensionScores": {
+        "extraversion": 15,
+        "agreeableness": 15,
+        "adjustment": 15,
+        "conscientiousness": 15,
+        "openness": 15
+      },
+      "dominantTrait": "Surgency / Extraversion"
+    },
+    "submittedAt": "2026-08-30T10:37:12.204Z"
+  }
+]
