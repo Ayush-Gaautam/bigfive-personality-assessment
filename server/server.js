@@ -145,7 +145,6 @@ app.get('/api/stats', (req, res) => {
       totals.totalScore += s.scores.totalScore || 0;
     }
 
-    // Count demographics
     const age = s.age || 'Unspecified';
     const gender = s.gender || 'Unspecified';
     const occ = s.occupation || 'Other';
@@ -174,7 +173,7 @@ app.get('/api/stats', (req, res) => {
   });
 });
 
-// GET /api/export - Export all responses as CSV with all demographic parameters
+// GET /api/export - Export all responses as CSV
 app.get('/api/export', (req, res) => {
   const submissions = readSubmissions();
   let csvHeaders = 'Submission ID,Name,Gmail / Email,Age,Gender,Occupation,Organization Name,Submitted Date,Total Score,Extraversion,Agreeableness,Emotional Stability,Conscientiousness,Openness,Dominant Trait\n';
@@ -204,6 +203,16 @@ app.get('/api/export', (req, res) => {
   res.setHeader('Content-Disposition', 'attachment; filename=Personality_Assessment_Results.csv');
   res.send(csvHeaders + csvRows);
 });
+
+// Serve built frontend assets in production mode
+const DIST_DIR = path.join(__dirname, '..', 'dist');
+if (fs.existsSync(DIST_DIR)) {
+  app.use(express.static(DIST_DIR));
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api')) return next();
+    res.sendFile(path.join(DIST_DIR, 'index.html'));
+  });
+}
 
 app.listen(PORT, () => {
   console.log(`[SERVER] Backend REST API running at http://localhost:${PORT}`);
