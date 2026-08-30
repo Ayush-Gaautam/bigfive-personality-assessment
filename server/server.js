@@ -17,17 +17,22 @@ const DATA_DIR = path.join(__dirname, 'data');
 const DB_FILE = path.join(DATA_DIR, 'submissions.json');
 
 // Ensure data directory and DB file exist
-if (!fs.existsSync(DATA_DIR)) {
-  fs.mkdirSync(DATA_DIR, { recursive: true });
-}
+try {
+  if (!fs.existsSync(DATA_DIR)) {
+    fs.mkdirSync(DATA_DIR, { recursive: true });
+  }
 
-if (!fs.existsSync(DB_FILE)) {
-  fs.writeFileSync(DB_FILE, JSON.stringify([], null, 2));
+  if (!fs.existsSync(DB_FILE)) {
+    fs.writeFileSync(DB_FILE, JSON.stringify([], null, 2));
+  }
+} catch (err) {
+  console.error('[DB INIT WARNING]', err.message);
 }
 
 // Helper to read DB
 function readSubmissions() {
   try {
+    if (!fs.existsSync(DB_FILE)) return [];
     const data = fs.readFileSync(DB_FILE, 'utf8');
     return JSON.parse(data || '[]');
   } catch (err) {
@@ -77,7 +82,7 @@ app.post('/api/submissions', (req, res) => {
     submittedAt: new Date().toISOString()
   };
 
-  submissions.unshift(newSubmission); // insert newest first
+  submissions.unshift(newSubmission);
   writeSubmissions(submissions);
 
   console.log(`[DB] New submission saved for: ${name} (${newSubmission.id})`);
@@ -204,7 +209,7 @@ app.get('/api/export', (req, res) => {
   res.send(csvHeaders + csvRows);
 });
 
-// Serve built frontend assets in production mode
+// Serve built frontend static assets in production
 const DIST_DIR = path.join(__dirname, '..', 'dist');
 if (fs.existsSync(DIST_DIR)) {
   app.use(express.static(DIST_DIR));
@@ -214,6 +219,6 @@ if (fs.existsSync(DIST_DIR)) {
   });
 }
 
-app.listen(PORT, () => {
-  console.log(`[SERVER] Backend REST API running at http://localhost:${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`[SERVER] Backend REST API running on port ${PORT}`);
 });
