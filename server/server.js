@@ -209,11 +209,11 @@ app.get('/api/export', (req, res) => {
   res.send(csvHeaders + csvRows);
 });
 
-// Serve built frontend static assets in production
+// Serve built frontend static assets in production (Express 5 compatible wildcard)
 const DIST_DIR = path.join(__dirname, '..', 'dist');
 if (fs.existsSync(DIST_DIR)) {
   app.use(express.static(DIST_DIR));
-  app.get('*', (req, res, next) => {
+  app.use((req, res, next) => {
     if (req.path.startsWith('/api')) return next();
     res.sendFile(path.join(DIST_DIR, 'index.html'));
   });
