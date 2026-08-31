@@ -209,16 +209,47 @@ app.get('/api/export', (req, res) => {
   res.send(csvHeaders + csvRows);
 });
 
-// Serve built frontend static assets in production (Express 5 compatible wildcard)
+// Serve built frontend static assets in production
 const DIST_DIR = path.join(__dirname, '..', 'dist');
-if (fs.existsSync(DIST_DIR)) {
-  app.use(express.static(DIST_DIR));
-  app.use((req, res, next) => {
-    if (req.path.startsWith('/api')) return next();
-    res.sendFile(path.join(DIST_DIR, 'index.html'));
-  });
-}
+
+// Serve static assets from dist folder
+app.use(express.static(DIST_DIR));
+
+// 404 handler for missing API endpoints
+app.use('/api', (req, res) => {
+  res.status(404).json({ success: false, message: 'API route not found' });
+});
+
+// SPA wildcard fallback: serve index.html for all non-API routes
+app.get('*', (req, res) => {
+  const indexPath = path.join(DIST_DIR, 'index.html');
+  if (fs.existsSync(indexPath)) {
+    res.sendFile(indexPath);
+  } else {
+    res.status(200).send(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Big Five Personality Assessment</title>
+          <style>
+            body { font-family: system-ui, sans-serif; background: #020617; color: #f8fafc; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; text-align: center; }
+            .card { background: #0f172a; padding: 2rem; border-radius: 1rem; border: 1px solid #334155; max-width: 450px; }
+            h1 { color: #6366f1; margin-top: 0; }
+            p { color: #94a3b8; font-size: 0.95rem; }
+          </style>
+        </head>
+        <body>
+          <div class="card">
+            <h1>App Initializing...</h1>
+            <p>The frontend static build is currently generating. If this screen persists, please run <code>npm run build</code>.</p>
+          </div>
+        </body>
+      </html>
+    `);
+  }
+});
 
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`[SERVER] Backend REST API running on port ${PORT}`);
 });
+

@@ -8,12 +8,66 @@ import ShareModal from './components/ShareModal';
 import { calculateScores } from './utils/scoring';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState('assessment');
-  const [currentResult, setCurrentResult] = useState(null);
-  const [submissions, setSubmissions] = useState([]);
+  const [activeTab, setActiveTabState] = useState(() => {
+    try {
+      return localStorage.getItem('bigfive_active_tab') || 'assessment';
+    } catch {
+      return 'assessment';
+    }
+  });
+
+  const [currentResult, setCurrentResultState] = useState(() => {
+    try {
+      const saved = localStorage.getItem('bigfive_latest_result');
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
+  });
+
+  const [submissions, setSubmissions] = useState(() => {
+    try {
+      const saved = localStorage.getItem('bigfive_local_submissions');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
   const [stats, setStats] = useState({ total: 0, averages: {}, ageDistribution: {}, genderDistribution: {} });
   const [loading, setLoading] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+
+  const setActiveTab = (tab) => {
+    setActiveTabState(tab);
+    try {
+      localStorage.setItem('bigfive_active_tab', tab);
+    } catch (e) {
+      console.warn('LocalStorage unavailable:', e);
+    }
+  };
+
+  const setCurrentResult = (result) => {
+    setCurrentResultState(result);
+    try {
+      if (result) {
+        localStorage.setItem('bigfive_latest_result', JSON.stringify(result));
+      } else {
+        localStorage.removeItem('bigfive_latest_result');
+      }
+    } catch (e) {
+      console.warn('LocalStorage unavailable:', e);
+    }
+  };
+
+  // Helper to save local submissions backup
+  const saveLocalSubmissionsBackup = (list) => {
+    try {
+      localStorage.setItem('bigfive_local_submissions', JSON.stringify(list));
+    } catch (e) {
+      console.warn('LocalStorage write failed:', e);
+    }
+  };
 
   // Fetch saved submissions from Backend REST API
   const fetchSubmissions = async () => {
@@ -22,12 +76,25 @@ export default function App() {
       const res = await fetch('/api/submissions');
       if (res.ok) {
         const json = await res.json();
-        if (json.success) {
-          setSubmissions(json.data || []);
+        if (json.success && Array.isArray(json.data)) {
+          // Merge API data with local submissions to prevent data loss on ephemeral restart
+          setSubmissions(prev => {
+            const apiMap = new Map(json.data.map(item => [item.id, item]));
+            prev.forEach(item => {
+              if (!apiMap.has(item.id)) {
+                apiMap.set(item.id, item);
+              }
+            });
+            const merged = Array.from(apiMap.values()).sort((a, b) => 
+              new Date(b.submittedAt) - new Date(a.submittedAt)
+            );
+            saveLocalSubmissionsBackup(merged);
+            return merged;
+          });
         }
       }
     } catch (err) {
-      console.warn('API unavailable, using local session state:', err);
+      console.warn('API unavailable, using local storage state:', err);
     } finally {
       setLoading(false);
     }
@@ -57,7 +124,7 @@ export default function App() {
   const handleSubmitAssessment = async (formData) => {
     const scores = calculateScores(formData.answers);
     const resultObj = {
-      id: 'SUB-' + Date.now(),
+      id: 'SUB-' + Date.now() + '-' + Math.random().toString(36).substring(2, 6).toUpperCase(),
       name: formData.name,
       email: formData.email,
       age: formData.age,
@@ -70,6 +137,13 @@ export default function App() {
     };
 
     setCurrentResult(resultObj);
+
+    // Save locally immediately
+    setSubmissions(prev => {
+      const updated = [resultObj, ...prev.filter(s => s.id !== resultObj.id)];
+      saveLocalSubmissionsBackup(updated);
+      return updated;
+    });
 
     // Save to Backend API
     try {
@@ -90,8 +164,14 @@ export default function App() {
 
       if (res.ok) {
         const json = await res.json();
-        if (json.success) {
-          console.log('Submission saved successfully with full demographics!');
+        if (json.success && json.data) {
+          // Update with server generated submission ID if available
+          setSubmissions(prev => {
+            const updated = [json.data, ...prev.filter(s => s.id !== resultObj.id && s.id !== json.data.id)];
+            saveLocalSubmissionsBackup(updated);
+            return updated;
+          });
+          setCurrentResult(json.data);
         }
       }
     } catch (err) {
@@ -110,6 +190,12 @@ export default function App() {
   const handleDeleteSubmission = async (id) => {
     if (!window.confirm('Are you sure you want to delete this submission?')) return;
 
+    setSubmissions(prev => {
+      const updated = prev.filter(s => s.id !== id);
+      saveLocalSubmissionsBackup(updated);
+      return updated;
+    });
+
     try {
       const res = await fetch(`/api/submissions/${id}`, { method: 'DELETE' });
       if (res.ok) {
@@ -118,7 +204,6 @@ export default function App() {
       }
     } catch (err) {
       console.error('Failed to delete submission:', err);
-      setSubmissions(prev => prev.filter(s => s.id !== id));
     }
   };
 
