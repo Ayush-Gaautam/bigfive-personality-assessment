@@ -220,8 +220,8 @@ app.use('/api', (req, res) => {
   res.status(404).json({ success: false, message: 'API route not found' });
 });
 
-// SPA wildcard fallback: serve index.html for all non-API routes
-app.get('*', (req, res) => {
+// SPA wildcard fallback: serve index.html for all non-API routes (Express 5 compatible)
+app.use((req, res) => {
   const indexPath = path.join(DIST_DIR, 'index.html');
   if (fs.existsSync(indexPath)) {
     res.sendFile(indexPath);
