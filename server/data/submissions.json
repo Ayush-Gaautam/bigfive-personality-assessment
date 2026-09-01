@@ -1,5 +1,155 @@
 [
   {
+    "id": "SUB-1788221700000-MEDHAVI",
+    "name": "Medhavi Gautam",
+    "email": "medhavigautam2147@gmail.com",
+    "age": "26-35",
+    "gender": "Female",
+    "occupation": "Student",
+    "organization": "NULL",
+    "answers": {
+      "1": 4, "2": 4, "3": 4, "4": 3, "5": 4,
+      "6": 4, "7": 5, "8": 4, "9": 4, "10": 4,
+      "11": 4, "12": 4, "13": 4, "14": 3, "15": 4,
+      "16": 4, "17": 4, "18": 4, "19": 4, "20": 4,
+      "21": 5, "22": 5, "23": 4, "24": 3, "25": 5
+    },
+    "scores": {
+      "totalScore": 101,
+      "maxTotalScore": 125,
+      "percentage": 81,
+      "dimensionScores": {
+        "extraversion": 21,
+        "agreeableness": 22,
+        "adjustment": 20,
+        "conscientiousness": 17,
+        "openness": 21
+      },
+      "dominantTrait": "Agreeableness"
+    },
+    "submittedAt": "2026-09-01T13:25:00.000Z"
+  },
+  {
+    "id": "SUB-1788206880000-SURYANSH",
+    "name": "Suryansh Katara",
+    "email": "suryanshkatara15@gmail.com",
+    "age": "18-25",
+    "gender": "Male",
+    "occupation": "student",
+    "organization": "LPU",
+    "answers": {
+      "1": 3, "2": 3, "3": 3, "4": 3, "5": 3,
+      "6": 3, "7": 3, "8": 3, "9": 3, "10": 3,
+      "11": 3, "12": 3, "13": 3, "14": 3, "15": 3,
+      "16": 3, "17": 3, "18": 3, "19": 3, "20": 3,
+      "21": 3, "22": 3, "23": 3, "24": 3, "25": 3
+    },
+    "scores": {
+      "totalScore": 75,
+      "maxTotalScore": 125,
+      "percentage": 60,
+      "dimensionScores": {
+        "extraversion": 15,
+        "agreeableness": 15,
+        "adjustment": 15,
+        "conscientiousness": 15,
+        "openness": 15
+      },
+      "dominantTrait": "Openness to Experience"
+    },
+    "submittedAt": "2026-09-01T09:18:00.000Z"
+  },
+  {
+    "id": "SUB-1788146460000-RAUNAK",
+    "name": "Raunak Kumar",
+    "email": "raunaksri5643@gmail.com",
+    "age": "18-25",
+    "gender": "Male",
+    "occupation": "Student",
+    "organization": "LPU",
+    "answers": {
+      "1": 5, "2": 5, "3": 5, "4": 5, "5": 5,
+      "6": 5, "7": 5, "8": 5, "9": 5, "10": 5,
+      "11": 5, "12": 5, "13": 5, "14": 5, "15": 5,
+      "16": 5, "17": 5, "18": 5, "19": 5, "20": 5,
+      "21": 5, "22": 5, "23": 5, "24": 5, "25": 5
+    },
+    "scores": {
+      "totalScore": 125,
+      "maxTotalScore": 125,
+      "percentage": 100,
+      "dimensionScores": {
+        "extraversion": 25,
+        "agreeableness": 25,
+        "adjustment": 25,
+        "conscientiousness": 25,
+        "openness": 25
+      },
+      "dominantTrait": "Openness to Experience"
+    },
+    "submittedAt": "2026-08-31T16:31:00.000Z"
+  },
+  {
+    "id": "SUB-1788143640000-LAVANYA",
+    "name": "Lavanya",
+    "email": "lavannyadhiman282@gmail.com",
+    "age": "18-25",
+    "gender": "Female",
+    "occupation": "N/A",
+    "organization": "N/A",
+    "answers": {
+      "1": 4, "2": 4, "3": 4, "4": 4, "5": 4,
+      "6": 3, "7": 4, "8": 4, "9": 4, "10": 4,
+      "11": 4, "12": 4, "13": 4, "14": 4, "15": 4,
+      "16": 3, "17": 4, "18": 3, "19": 4, "20": 3,
+      "21": 4, "22": 4, "23": 4, "24": 4, "25": 4
+    },
+    "scores": {
+      "totalScore": 96,
+      "maxTotalScore": 125,
+      "percentage": 77,
+      "dimensionScores": {
+        "extraversion": 18,
+        "agreeableness": 20,
+        "adjustment": 19,
+        "conscientiousness": 20,
+        "openness": 19
+      },
+      "dominantTrait": "Conscientiousness"
+    },
+    "submittedAt": "2026-08-31T15:44:00.000Z"
+  },
+  {
+    "id": "SUB-1788143460000-AYUSH",
+    "name": "Ayush Gautam",
+    "email": "muskangautam2022@gmail.com",
+    "age": "18-25",
+    "gender": "Male",
+    "occupation": "Student",
+    "organization": "Lovely Professional University",
+    "answers": {
+      "1": 5, "2": 5, "3": 5, "4": 5, "5": 5,
+      "6": 5, "7": 4, "8": 4, "9": 5, "10": 5,
+      "11": 5, "12": 5, "13": 5, "14": 5, "15": 5,
+      "16": 4, "17": 4, "18": 4, "19": 4, "20": 4,
+      "21": 5, "22": 5, "23": 5, "24": 5, "25": 5
+    },
+    "scores": {
+      "totalScore": 118,
+      "maxTotalScore": 125,
+      "percentage": 94,
+      "dimensionScores": {
+        "extraversion": 24,
+        "agreeableness": 23,
+        "adjustment": 23,
+        "conscientiousness": 24,
+        "openness": 24
+      },
+      "dominantTrait": "Openness to Experience"
+    },
+    "submittedAt": "2026-08-31T15:41:00.000Z"
+  },
+  {
     "id": "SUB-1788086533688-DEMO1",
     "name": "Sarah Jenkins",
     "email": "s.jenkins@university.edu",

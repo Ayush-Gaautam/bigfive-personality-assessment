@@ -77,20 +77,11 @@ export default function App() {
       if (res.ok) {
         const json = await res.json();
         if (json.success && Array.isArray(json.data)) {
-          // Merge API data with local submissions to prevent data loss on ephemeral restart
-          setSubmissions(prev => {
-            const apiMap = new Map(json.data.map(item => [item.id, item]));
-            prev.forEach(item => {
-              if (!apiMap.has(item.id)) {
-                apiMap.set(item.id, item);
-              }
-            });
-            const merged = Array.from(apiMap.values()).sort((a, b) => 
-              new Date(b.submittedAt) - new Date(a.submittedAt)
-            );
-            saveLocalSubmissionsBackup(merged);
-            return merged;
-          });
+          const sorted = json.data.sort((a, b) => 
+            new Date(b.submittedAt) - new Date(a.submittedAt)
+          );
+          setSubmissions(sorted);
+          saveLocalSubmissionsBackup(sorted);
         }
       }
     } catch (err) {
