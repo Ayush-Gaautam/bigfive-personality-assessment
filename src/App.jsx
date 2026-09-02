@@ -73,7 +73,7 @@ export default function App() {
   const fetchSubmissions = async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/submissions');
+      const res = await fetch('/api/submissions?t=' + Date.now(), { cache: 'no-store' });
       if (res.ok) {
         const json = await res.json();
         if (json.success && Array.isArray(json.data)) {
@@ -120,7 +120,7 @@ export default function App() {
   // Fetch Class & Demographic Stats from Backend API
   const fetchStats = async () => {
     try {
-      const res = await fetch('/api/stats');
+      const res = await fetch('/api/stats?t=' + Date.now(), { cache: 'no-store' });
       if (res.ok) {
         const json = await res.json();
         if (json.success) {
