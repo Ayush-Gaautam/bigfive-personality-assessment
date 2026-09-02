@@ -69,7 +69,7 @@ export default function App() {
     }
   };
 
-  // Fetch saved submissions from Backend REST API
+  // Fetch saved submissions from Backend REST API & Bidirectionally Merge Local Storage
   const fetchSubmissions = async () => {
     setLoading(true);
     try {
@@ -77,11 +77,37 @@ export default function App() {
       if (res.ok) {
         const json = await res.json();
         if (json.success && Array.isArray(json.data)) {
-          const sorted = json.data.sort((a, b) => 
+          const apiSubmissions = json.data;
+          const apiMap = new Map(apiSubmissions.map(item => [item.id, item]));
+
+          // Read current local storage submissions
+          let localSubmissions = [];
+          try {
+            const saved = localStorage.getItem('bigfive_local_submissions');
+            localSubmissions = saved ? JSON.parse(saved) : [];
+          } catch (e) {
+            localSubmissions = [];
+          }
+
+          // Check if any local submission is missing from server and attempt sync
+          for (const item of localSubmissions) {
+            if (!apiMap.has(item.id)) {
+              apiMap.set(item.id, item);
+              // Push to backend asynchronously to sync database
+              fetch('/api/submissions', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(item)
+              }).catch(err => console.warn('Background sync failed for item:', item.id, err));
+            }
+          }
+
+          const mergedSorted = Array.from(apiMap.values()).sort((a, b) => 
             new Date(b.submittedAt) - new Date(a.submittedAt)
           );
-          setSubmissions(sorted);
-          saveLocalSubmissionsBackup(sorted);
+
+          setSubmissions(mergedSorted);
+          saveLocalSubmissionsBackup(mergedSorted);
         }
       }
     } catch (err) {
@@ -142,6 +168,7 @@ export default function App() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          id: resultObj.id,
           name: formData.name,
           email: formData.email,
           age: formData.age,
@@ -149,7 +176,8 @@ export default function App() {
           occupation: formData.occupation,
           organization: formData.organization,
           answers: formData.answers,
-          scores
+          scores,
+          submittedAt: resultObj.submittedAt
         })
       });
 

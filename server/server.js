@@ -60,17 +60,29 @@ app.get('/api/submissions', (req, res) => {
   res.json({ success: true, count: submissions.length, data: submissions });
 });
 
-// POST /api/submissions - Submit a new response
+// POST /api/submissions - Submit a new response or sync local submission
 app.post('/api/submissions', (req, res) => {
-  const { name, email, age, gender, occupation, organization, answers, scores } = req.body;
+  const { id, name, email, age, gender, occupation, organization, answers, scores, submittedAt } = req.body;
 
   if (!name || !answers || !scores) {
     return res.status(400).json({ success: false, message: 'Missing required fields (name, answers, scores).' });
   }
 
   const submissions = readSubmissions();
+  
+  // Prevent duplicates if submission with exact ID already exists
+  if (id) {
+    const existing = submissions.find(s => s.id === id);
+    if (existing) {
+      return res.status(200).json({ success: true, data: existing, note: 'Submission already exists in database.' });
+    }
+  }
+
+  const submissionId = id || ('SUB-' + Date.now() + '-' + Math.random().toString(36).substr(2, 4).toUpperCase());
+  const submissionTime = submittedAt || new Date().toISOString();
+
   const newSubmission = {
-    id: 'SUB-' + Date.now() + '-' + Math.random().toString(36).substr(2, 4).toUpperCase(),
+    id: submissionId,
     name: name.trim(),
     email: (email || '').trim(),
     age: (age || '').trim(),
@@ -79,7 +91,7 @@ app.post('/api/submissions', (req, res) => {
     organization: (organization || '').trim(),
     answers,
     scores,
-    submittedAt: new Date().toISOString()
+    submittedAt: submissionTime
   };
 
   submissions.unshift(newSubmission);

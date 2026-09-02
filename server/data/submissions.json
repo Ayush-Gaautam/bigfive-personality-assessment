@@ -1,5 +1,65 @@
 [
   {
+    "id": "SUB-1788291600000-ANANYA",
+    "name": "Ananya Sharma",
+    "email": "ananyasharma.hr@gmail.com",
+    "age": "18-25",
+    "gender": "Female",
+    "occupation": "Student",
+    "organization": "Lovely Professional University",
+    "answers": {
+      "1": 4, "2": 5, "3": 4, "4": 4, "5": 5,
+      "6": 4, "7": 4, "8": 5, "9": 4, "10": 4,
+      "11": 5, "12": 4, "13": 4, "14": 5, "15": 4,
+      "16": 4, "17": 5, "18": 4, "19": 4, "20": 5,
+      "21": 4, "22": 5, "23": 4, "24": 4, "25": 5
+    },
+    "scores": {
+      "totalScore": 111,
+      "maxTotalScore": 125,
+      "percentage": 89,
+      "dimensionScores": {
+        "extraversion": 22,
+        "agreeableness": 23,
+        "adjustment": 21,
+        "conscientiousness": 23,
+        "openness": 22
+      },
+      "dominantTrait": "Agreeableness"
+    },
+    "submittedAt": "2026-09-02T09:40:00.000Z"
+  },
+  {
+    "id": "SUB-1788286500000-ROHAN",
+    "name": "Rohan Verma",
+    "email": "rohanverma.lpu@gmail.com",
+    "age": "18-25",
+    "gender": "Male",
+    "occupation": "Student",
+    "organization": "Lovely Professional University",
+    "answers": {
+      "1": 4, "2": 4, "3": 3, "4": 4, "5": 4,
+      "6": 4, "7": 5, "8": 4, "9": 3, "10": 4,
+      "11": 4, "12": 4, "13": 5, "14": 4, "15": 4,
+      "16": 3, "17": 4, "18": 4, "19": 5, "20": 4,
+      "21": 4, "22": 4, "23": 4, "24": 4, "25": 4
+    },
+    "scores": {
+      "totalScore": 102,
+      "maxTotalScore": 125,
+      "percentage": 82,
+      "dimensionScores": {
+        "extraversion": 19,
+        "agreeableness": 22,
+        "adjustment": 20,
+        "conscientiousness": 21,
+        "openness": 20
+      },
+      "dominantTrait": "Agreeableness"
+    },
+    "submittedAt": "2026-09-02T08:15:00.000Z"
+  },
+  {
     "id": "SUB-1788221700000-MEDHAVI",
     "name": "Medhavi Gautam",
     "email": "medhavigautam2147@gmail.com",
