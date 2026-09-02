@@ -15,6 +15,7 @@ app.use(express.json());
 
 const DATA_DIR = path.join(__dirname, 'data');
 const DB_FILE = path.join(DATA_DIR, 'submissions.json');
+const DB_BACKUP_FILE = path.join(DATA_DIR, 'submissions.json.bak');
 
 // Ensure data directory and DB file exist
 try {
@@ -25,26 +26,48 @@ try {
   if (!fs.existsSync(DB_FILE)) {
     fs.writeFileSync(DB_FILE, JSON.stringify([], null, 2));
   }
+  if (!fs.existsSync(DB_BACKUP_FILE)) {
+    fs.writeFileSync(DB_BACKUP_FILE, JSON.stringify([], null, 2));
+  }
 } catch (err) {
   console.error('[DB INIT WARNING]', err.message);
 }
 
-// Helper to read DB
+// Helper to read DB with automatic backup recovery
 function readSubmissions() {
   try {
-    if (!fs.existsSync(DB_FILE)) return [];
+    if (!fs.existsSync(DB_FILE)) {
+      if (fs.existsSync(DB_BACKUP_FILE)) {
+        const backupData = fs.readFileSync(DB_BACKUP_FILE, 'utf8');
+        const parsedBackup = JSON.parse(backupData || '[]');
+        return Array.isArray(parsedBackup) ? parsedBackup : [];
+      }
+      return [];
+    }
     const data = fs.readFileSync(DB_FILE, 'utf8');
-    return JSON.parse(data || '[]');
+    const parsed = JSON.parse(data || '[]');
+    return Array.isArray(parsed) ? parsed : [];
   } catch (err) {
-    console.error('Error reading database file:', err);
+    console.error('Error reading database file, attempting backup recovery:', err);
+    try {
+      if (fs.existsSync(DB_BACKUP_FILE)) {
+        const backupData = fs.readFileSync(DB_BACKUP_FILE, 'utf8');
+        const parsedBackup = JSON.parse(backupData || '[]');
+        return Array.isArray(parsedBackup) ? parsedBackup : [];
+      }
+    } catch (bakErr) {
+      console.error('Backup recovery failed:', bakErr);
+    }
     return [];
   }
 }
 
-// Helper to write DB
+// Helper to write DB with automatic backup creation
 function writeSubmissions(submissions) {
   try {
-    fs.writeFileSync(DB_FILE, JSON.stringify(submissions, null, 2));
+    const jsonStr = JSON.stringify(submissions, null, 2);
+    fs.writeFileSync(DB_BACKUP_FILE, jsonStr, 'utf8');
+    fs.writeFileSync(DB_FILE, jsonStr, 'utf8');
     return true;
   } catch (err) {
     console.error('Error writing to database file:', err);
@@ -60,7 +83,7 @@ app.get('/api/submissions', (req, res) => {
   res.json({ success: true, count: submissions.length, data: submissions });
 });
 
-// POST /api/submissions - Submit a new response or sync local submission
+// POST /api/submissions - Submit a new response with strict deduplication
 app.post('/api/submissions', (req, res) => {
   const { id, name, email, age, gender, occupation, organization, answers, scores, submittedAt } = req.body;
 
@@ -69,22 +92,33 @@ app.post('/api/submissions', (req, res) => {
   }
 
   const submissions = readSubmissions();
-  
-  // Prevent duplicates if submission with exact ID already exists
-  if (id) {
-    const existing = submissions.find(s => s.id === id);
-    if (existing) {
-      return res.status(200).json({ success: true, data: existing, note: 'Submission already exists in database.' });
+  const trimmedName = name.trim();
+  const trimmedEmail = (email || '').trim();
+  const submissionTime = submittedAt || new Date().toISOString();
+  const now = new Date(submissionTime).getTime();
+
+  // Deduplicate: check if exact ID exists OR same Name + Email submitted within 3 minutes
+  const existing = submissions.find(s => {
+    if (id && s.id === id) return true;
+    if (trimmedEmail.length > 0 && 
+        s.name.toLowerCase() === trimmedName.toLowerCase() &&
+        s.email.toLowerCase() === trimmedEmail.toLowerCase()) {
+      const timeDiffMs = Math.abs(new Date(s.submittedAt).getTime() - now);
+      if (timeDiffMs < 180000) return true; // 3 minutes
     }
+    return false;
+  });
+
+  if (existing) {
+    return res.status(200).json({ success: true, data: existing, note: 'Submission already recorded.' });
   }
 
   const submissionId = id || ('SUB-' + Date.now() + '-' + Math.random().toString(36).substr(2, 4).toUpperCase());
-  const submissionTime = submittedAt || new Date().toISOString();
 
   const newSubmission = {
     id: submissionId,
-    name: name.trim(),
-    email: (email || '').trim(),
+    name: trimmedName,
+    email: trimmedEmail,
     age: (age || '').trim(),
     gender: (gender || '').trim(),
     occupation: (occupation || '').trim(),
@@ -97,7 +131,7 @@ app.post('/api/submissions', (req, res) => {
   submissions.unshift(newSubmission);
   writeSubmissions(submissions);
 
-  console.log(`[DB] New submission saved for: ${name} (${newSubmission.id})`);
+  console.log(`[DB] New submission saved for: ${trimmedName} (${newSubmission.id})`);
   res.status(201).json({ success: true, data: newSubmission });
 });
 
